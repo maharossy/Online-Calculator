@@ -3,3 +3,6 @@ export const percentFormatter = new Intl.NumberFormat('ru-RU',
 
 export const priceFormatter = new Intl.NumberFormat('ru-RU',
     {style: 'currency', currency: 'RUB', maximymFractionDigits: 2}); // 4 000 P
+
+export const priceFormatterDecimals = new Intl.NumberFormat('ru-RU',
+    {style: 'currency', currency: 'RUB', maximymFractionDigits: 2}); 

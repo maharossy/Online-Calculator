@@ -1,4 +1,4 @@
-import {priceFormatter} from './formatters.js';
+import {priceFormatter, priceFormatterDecimals} from './formatters.js';
 
 // Inputs
 const inputCost = document.querySelector('#input-cost'),
@@ -39,13 +39,28 @@ function calcMortgage() {
 
     //mortgage term
     const creditRate = +document.querySelector('input[name="program"]:checked').value;
-    const mounthRate = creditRate / 12;
+    const monthRate = creditRate / 12;
 
     //Credit years
     const years = +cleaveTerm.getRawValue();
     const months = years * 12;
 
     //Monthly payment calculation
-    const mounthPayment = (totalAmount * mounthRate) / 1 - (1 + mounthRate) * (1 - months);
-    totalMonthPayment.innerText = mounthPayment.toFixed(2);
+    const mounthPayment = (totalAmount * monthRate) / 1 - (1 + monthRate) * (1 - months);
+
+    // Show monthly payment calculation
+    totalMonthPayment.innerText = priceFormatterDecimals.format(mounthPayment);
 }
+
+const sliderCost = document.querySelector('#slider-cost');
+
+noUiSlider.create(sliderCost, {
+    start: 12000000,
+    connect: 'lower',
+    tooltips: true,
+    step: 1,
+    range: {
+        min: 0,
+        max: 100000000,
+    },
+});
