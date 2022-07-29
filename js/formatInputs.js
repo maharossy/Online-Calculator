@@ -58,9 +58,24 @@ noUiSlider.create(sliderCost, {
     start: 12000000,
     connect: 'lower',
     tooltips: true,
-    step: 1,
+    step: 100000,
     range: {
         min: 0,
+        '50%': [10000000, 1000000],
         max: 100000000,
     },
+
+    format: wNumb({
+        decimals: 0,
+        thousand: ' ',
+        suffix: '',
+    }),
+});
+
+sliderCost.noUiSlider.on('update', function() {
+    const sliderValue = parseInt(sliderCost.noUiSlider.get(true));
+
+    cleaveCost.setRawValue(sliderValue);
+    
+    calcMortgage();
 });
