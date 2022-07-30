@@ -1,5 +1,7 @@
 import {priceFormatter, priceFormatterDecimals} from './formatters.js';
 
+const maxPrice = 100000000;
+
 // Inputs
 const inputCost = document.querySelector('#input-cost'),
       inputDownPayment = document.querySelector('#input-downpayment'),
@@ -39,14 +41,14 @@ function calcMortgage() {
 
     //mortgage term
     const creditRate = +document.querySelector('input[name="program"]:checked').value;
-    const monthRate = creditRate / 12;
+    const monthRate = (creditRate * 100) / 12;
 
     //Credit years
     const years = +cleaveTerm.getRawValue();
     const months = years * 12;
 
     //Monthly payment calculation
-    const mounthPayment = (totalAmount * monthRate) / 1 - (1 + monthRate) * (1 - months);
+    const mounthPayment = (totalAmount * monthRate) / (1 - (1 + monthRate) * (1 - months));
 
     // Show monthly payment calculation
     totalMonthPayment.innerText = priceFormatterDecimals.format(mounthPayment);
@@ -85,7 +87,7 @@ sliderCost.noUiSlider.on('update', function() {
 const sliderDownpayment = document.querySelector('#slider-downpayment');
 
 noUiSlider.create(sliderDownpayment, {
-    start: 12000000,
+    start: 6000000,
     connect: 'lower',
     tooltips: true,
     step: 100000,
@@ -121,7 +123,7 @@ noUiSlider.create(sliderTerm, {
     range: {
         min: 1,
         max: 30,
-    },
+    },  
 
     format: wNumb({
         decimals: 0,
@@ -136,4 +138,30 @@ sliderTerm.noUiSlider.on('update', function() {
     cleaveTerm.setRawValue(sliderValue);
 
     calcMortgage();
+}); 
+
+// Formating inputCost
+inputCost.addEventListener('input', function() {
+
+    const value = +cleaveCost.getRawValue();
+
+    if (value > maxPrice) {
+        inputCost.closest('.param__details').classList.add('param__details--error');
+    }
+
+    if (value <= maxPrice) {
+        inputCost.closest('.param__details').classList.remove('param__details--error');
+    }
+});
+
+inputCost.addEventListener('change', function() {
+
+    const value = +cleaveCost.getRawValue();
+
+    if (value > maxPrice) {
+        inputCost.closest('.param__details').classList.add('param__details--error');
+    }
+
+    cleaveCost.setRawValue(maxPrice);
+
 });
