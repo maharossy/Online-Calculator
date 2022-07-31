@@ -35,6 +35,14 @@ form.addEventListener('input', () => {
 
 
 function calcMortgage() {
+
+    let cost = +cleaveCost.getRawValue();
+
+    // Сhecking that the amount of real estate is not more than the maximum
+    if (cost > maxPrice) {
+        cost = maxPrice;
+    }
+
     //Total credit amount
     const totalAmount = +cleaveCost.getRawValue() - cleaveDownPayment.getRawValue();
     totalCost.innerText = priceFormatter.format(totalAmount);
@@ -60,7 +68,7 @@ const sliderCost = document.querySelector('#slider-cost');
 noUiSlider.create(sliderCost, {
     start: 12000000,
     connect: 'lower',
-    tooltips: true,
+    // tooltips: true,
     step: 100000,
     range: {
         min: 0,
@@ -75,7 +83,7 @@ noUiSlider.create(sliderCost, {
     }),
 });
 
-sliderCost.noUiSlider.on('update', function() {
+sliderCost.noUiSlider.on('slide', function() {
     const sliderValue = parseInt(sliderCost.noUiSlider.get(true));
 
     cleaveCost.setRawValue(sliderValue);
@@ -93,10 +101,9 @@ noUiSlider.create(sliderDownpayment, {
     step: 100000,
     range: {
         min: 0,
-        '50%': [10000000, 1000000],
-        max: 100000000,
+        max: 10000000,
     },
-
+ 
     format: wNumb({
         decimals: 0,
         thousand: ' ',
@@ -104,7 +111,7 @@ noUiSlider.create(sliderDownpayment, {
     }),
 });
 
-sliderDownpayment.noUiSlider.on('update', function() {
+sliderDownpayment.noUiSlider.on('slide', function() {
     const sliderValue = parseInt(sliderDownpayment.noUiSlider.get(true));
 
     cleaveDownPayment.setRawValue(sliderValue);
@@ -132,7 +139,7 @@ noUiSlider.create(sliderTerm, {
     }),
 });
 
-sliderTerm.noUiSlider.on('update', function() {
+sliderTerm.noUiSlider.on('slide', function() {
     const sliderValue = parseInt(sliderTerm.noUiSlider.get(true));
 
     cleaveTerm.setRawValue(sliderValue);
@@ -145,13 +152,26 @@ inputCost.addEventListener('input', function() {
 
     const value = +cleaveCost.getRawValue();
 
-    if (value > maxPrice) {
-        inputCost.closest('.param__details').classList.add('param__details--error');
-    }
+    // Updating range slider
+    sliderCost.noUiSlider.set(value);
 
-    if (value <= maxPrice) {
-        inputCost.closest('.param__details').classList.remove('param__details--error');
-    }
+    // Maximum price check
+    if (value > maxPrice) inputCost.closest('.param__details').classList.add('param__details--error');
+    if (value <= maxPrice) inputCost.closest('.param__details').classList.remove('param__details--error');
+    
+    // value dependence downpayment in input cost
+    const percentMin = value * 0.15,
+          percentMax = value * 0.90;
+
+
+    sliderDownpayment.noUiSlider.updateOptions({
+        range: {
+            min: percentMin,
+            max: percentMax,
+        },
+    });
+
+
 });
 
 inputCost.addEventListener('change', function() {
